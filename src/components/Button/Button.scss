@@ -1,0 +1,123 @@
+.button-container {
+  position: relative;
+  display: inline-block;
+
+  .tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    animation: fadeIn 0.2s ease forwards;
+
+    .tooltip-arrow {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  &:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+}
+
+.button {
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  &.round {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+
+    svg {
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    &:hover svg {
+      transform: scale(1.2);
+    }
+  }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active .button-content {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    background-color: var(--button-disabled-bg);
+    color: var(--button-disabled-text);
+    cursor: not-allowed;
+    opacity: 0.9;
+    box-shadow: none;
+  }
+
+  &.button-primary {
+    background-color: var(--button-primary);
+  }
+
+  &.button-success {
+    background-color: var(--button-success);
+  }
+
+  &.button-info {
+    background-color: var(--button-info);
+  }
+
+  &.button-danger {
+    background-color: var(--button-danger);
+
+    &:hover {
+      background-color: var(--button-danger-hover);
+    }
+  }
+}

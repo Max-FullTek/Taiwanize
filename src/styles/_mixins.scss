@@ -1,0 +1,96 @@
+// 基礎 flex 混合器
+@mixin flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// 卡片元素混合器
+@mixin card($borderRadius: 8px) {
+  border: 1px solid var(--card-border);
+  border-radius: $borderRadius;
+  background-color: var(--card-bg);
+  padding: 15px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+// 按鈕混合器
+@mixin button($bg-color) {
+  background-color: var(--#{$bg-color});
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  &:disabled {
+    background-color: var(--button-disabled-bg);
+    color: var(--button-disabled-text);
+    cursor: not-allowed;
+    opacity: 0.9;
+  }
+}
+
+// RWD 斷點
+$mobile-width: 768px;
+$tablet-width: 769px;
+$laptop-width: 1440px;
+$desktop-width: 1920px;
+
+// RWD 混合器
+@mixin mobile {
+  @media (max-width: #{$mobile-width}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$tablet-width}) and (max-width: #{$laptop-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media (min-width: #{$laptop-width}) and (max-width: #{$desktop-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$desktop-width}) {
+    @content;
+  }
+}
+
+// 容器尺寸混合器
+@mixin container($padding: 20px) {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: $padding;
+  box-sizing: border-box;
+
+  @include mobile {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 10px;
+  }
+}
+
+// 網格系統混合器
+@mixin grid($columns: 12, $gutter: 20px) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  grid-gap: $gutter;
+}
+
+@mixin grid-column($span: 1) {
+  grid-column: span $span;
+}
