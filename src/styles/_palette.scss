@@ -1,0 +1,50 @@
+@use "sass:color";
+
+// SCSS 顏色變數定義 - 灰階色系
+// 淺色主題變數
+$light-bg-color: #f8f9fa;
+$light-text-color: #333333;
+$light-text-secondary: #666666;
+$light-header-bg: #ffffff;
+$light-header-text: #333333;
+$light-card-bg: #ffffff;
+$light-card-border: #e6e6e6;
+$light-button-primary: #333333;
+$light-button-primary-rgb: 102, 102, 102; // 按鈕顏色的 RGB 格式
+$light-button-secondary-light: #DDDDDD;
+$light-button-secondary: #AAAAAA;
+$light-button-disabled-bg: #e0e0e0;
+$light-button-disabled-text: #757575;
+$light-input-bg: #ffffff;
+$light-input-border: #dddddd;
+$light-preview-bg: #f5f5f5;
+$light-shadow-color: rgba(0, 0, 0, 0.1);
+$light-highlight-bg: rgba(0, 0, 0, 0.05);
+$light-zone-dragging-bg: rgba(180, 180, 180, 0.1);
+$light-zone-has-file-bg: rgba(180, 180, 180, 0.05);
+
+// 深色主題變數
+$dark-bg-color: #1a1a1a;
+$dark-text-color: #f0f0f0;
+$dark-text-secondary: #999999;
+$dark-header-bg: #242424;
+$dark-header-text: #ffffff;
+$dark-card-bg: #2d2d2d;
+$dark-card-border: #444444;
+$dark-button-primary: #f0f0f0;
+$dark-button-primary-rgb: 240, 240, 240; // 按鈕顏色的 RGB 格式
+$dark-button-secondary-light: #999999;
+$dark-button-secondary: #aaaaaa;
+$dark-button-disabled-bg: #4a4a4a;
+$dark-button-disabled-text: #888888;
+$dark-input-bg: #3a3a3a;
+$dark-input-border: #555555;
+$dark-preview-bg: #333333;
+$dark-shadow-color: rgba(0, 0, 0, 0.25);
+$dark-highlight-bg: rgba(255, 255, 255, 0.1);
+$dark-zone-dragging-bg: rgba(150, 150, 150, 0.1);
+$dark-zone-has-file-bg: rgba(150, 150, 150, 0.08);
+
+// 計算衍生顏色
+$light-hover-primary: color.adjust($light-button-primary, $lightness: -10%);
+$dark-hover-primary: color.adjust($dark-button-primary, $lightness: 10%);

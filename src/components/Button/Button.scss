@@ -4,9 +4,6 @@
 
   .tooltip {
     position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%);
     padding: 8px 12px;
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
@@ -16,18 +13,74 @@
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    animation: fadeIn 0.2s ease forwards;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+
+    // 根據位置設定不同的樣式
+    &.tooltip-top {
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    &.tooltip-bottom {
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    &.tooltip-left {
+      right: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &.tooltip-right {
+      left: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%);
+    }
 
     .tooltip-arrow {
       position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-top: 6px solid rgba(0, 0, 0, 0.8);
+
+      &.tooltip-arrow-top {
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid rgba(0, 0, 0, 0.8);
+      }
+
+      &.tooltip-arrow-bottom {
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid rgba(0, 0, 0, 0.8);
+      }
+
+      &.tooltip-arrow-left {
+        right: -6px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 6px solid rgba(0, 0, 0, 0.8);
+      }
+
+      &.tooltip-arrow-right {
+        left: -6px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-right: 6px solid rgba(0, 0, 0, 0.8);
+      }
     }
   }
 
@@ -36,10 +89,27 @@
     visibility: visible;
   }
 
-  @keyframes fadeIn {
+  // 不同方向的進入動畫
+  .tooltip.tooltip-top {
+    animation: fadeInTop 0.2s ease forwards;
+  }
+
+  .tooltip.tooltip-bottom {
+    animation: fadeInBottom 0.2s ease forwards;
+  }
+
+  .tooltip.tooltip-left {
+    animation: fadeInLeft 0.2s ease forwards;
+  }
+
+  .tooltip.tooltip-right {
+    animation: fadeInRight 0.2s ease forwards;
+  }
+
+  @keyframes fadeInTop {
     from {
       opacity: 0;
-      transform: translateX(-50%) translateY(10px);
+      transform: translateX(-50%) translateY(5px);
     }
 
     to {
@@ -47,13 +117,45 @@
       transform: translateX(-50%) translateY(0);
     }
   }
+
+  @keyframes fadeInBottom {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateY(-50%) translateX(5px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+  }
+
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateY(-50%) translateX(-5px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+  }
 }
 
 .button {
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 12px 24px;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -61,21 +163,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-
-  &.round {
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    padding: 0;
-
-    svg {
-      transition: transform 0.3s ease, color 0.3s ease;
-    }
-
-    &:hover svg {
-      transform: scale(1.2);
-    }
-  }
+  border-radius: 6px;
+  padding: 10px 20px;
 
   .button-content {
     display: flex;
@@ -94,30 +183,94 @@
   }
 
   &:disabled {
-    background-color: var(--button-disabled-bg);
-    color: var(--button-disabled-text);
     cursor: not-allowed;
     opacity: 0.9;
     box-shadow: none;
   }
 
-  &.button-primary {
-    background-color: var(--button-primary);
-  }
-
-  &.button-success {
-    background-color: var(--button-success);
-  }
-
-  &.button-info {
-    background-color: var(--button-info);
-  }
-
-  &.button-danger {
-    background-color: var(--button-danger);
+  // 1. 框線按鈕 - outline
+  &.button-outline {
+    background-color: transparent;
+    border: 2px solid var(--button-primary);
+    color: var(--button-primary);
 
     &:hover {
-      background-color: var(--button-danger-hover);
+      background-color: rgba(var(--button-primary-rgb), 0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    &:disabled {
+      border-color: var(--button-disabled-bg);
+      color: var(--button-disabled-text);
+      background-color: transparent;
+    }
+
+    &.round {
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+    }
+  }
+
+  // 2. 無框線按鈕 - icon
+  &.button-icon {
+    background-color: transparent;
+    border: none;
+    color: var(--button-primary);
+    padding: 8px 10px;
+
+    &:hover {
+      background-color: rgba(var(--button-primary-rgb), 0.2);
+      border-radius: 10px; // 圓角方形
+    }
+
+    &:disabled {
+      color: var(--button-disabled-text);
+      background-color: transparent;
+    }
+
+    &.round {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+
+      &:hover {
+        border-radius: 50%;
+      }
+    }
+  }
+
+  // 3. 圓形有底色按鈕 - filled
+  &.button-filled {
+    color: var(--bg-color);
+    background-color: var(--button-primary);
+    border: none;
+
+    &:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:disabled {
+      background-color: var(--button-disabled-bg);
+      color: var(--button-disabled-text);
+    }
+
+    &.round {
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+
+      svg {
+        transition: transform 0.3s ease;
+      }
+
+      &:hover svg {
+        transform: scale(1.1);
+      }
     }
   }
 }

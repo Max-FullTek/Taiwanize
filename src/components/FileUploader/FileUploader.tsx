@@ -11,7 +11,7 @@ import {
   faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from '../Button/Button';
 import { FileUploaderModel } from './FileUploader.model';
 import './FileUploader.scss';
@@ -27,7 +27,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   acceptedFileTypes,
   onClearFile
 }) => {
-  console.log('我被重新渲染了！');
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [fileModel, setFileModel] = useState<FileUploaderModel | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,25 +48,18 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      handleFileSelection(file);
+      handleFileSelection(file, true);
     }
   };
 
-  useEffect(() => {
-    console.log('FileUploader mounted');
-    return () => console.log('FileUploader unmounted');
-  }, []);
-
-  const handleFileSelection = (file: File) => {
+  const handleFileSelection = (file: File, fromDrop = false) => {
     // 檢查檔案類型是否符合接受的類型
     const acceptedTypes = acceptedFileTypes.split(',');
     const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-    console.log('fileExtension', fileExtension);
-    console.log('acceptedTypes', acceptedTypes);
+
     if (acceptedTypes.some(type => type.includes(fileExtension))) {
-      console.log('Accepted file type:', fileExtension);
-      // 將檔案設置到 input 元素中，以便可以正確地獲取它
-      if (fileInputRef.current) {
+      // 只有在拖放情況下才需要手動設置 input 的 files 屬性
+      if (fromDrop && fileInputRef.current) {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
         fileInputRef.current.files = dataTransfer.files;
@@ -121,10 +113,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
   const handleClearFile = (e: React.MouseEvent) => {
     e.stopPropagation(); // 阻止事件冒泡，避免觸發整個區域的點擊事件
-    setFileModel(null);
-    if (onClearFile) {
-      onClearFile();
-    }
+    setFileModel(null); // 清空檔案模型
+    if (fileInputRef.current) fileInputRef.current.value = ''; // 清空 input 的檔案
+    if (onClearFile) onClearFile();
   };
 
   return (
@@ -139,16 +130,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         <div className="delete-button-container">
           <Button
             className="delete-button"
-            type="danger"
-            isRound={true}
-            tooltip="刪除檔案"
+            tooltip="重新上傳檔案"
             onClick={handleClearFile}
           >
             <FontAwesomeIcon icon={faTimes} />
           </Button>
         </div>
       )}
-      {fileModel ? '已上傳檔案：' + fileModel.fileName : '尚未上傳檔案'}
 
       {fileModel ? (
         <div className="file-info">

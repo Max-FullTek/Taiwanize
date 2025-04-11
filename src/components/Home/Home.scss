@@ -1,0 +1,138 @@
+@use '../../styles/mixins.scss' as *;
+
+// 變數定義
+$border-radius: 8px;
+$transition-speed: 0.3s;
+
+.container {
+  @include container(20px);
+
+  @include tablet {
+    max-width: 90%;
+  }
+
+  @include mobile {
+    padding: 10px; // 保留 container 的內部 padding
+    margin: 0; // 移除邊距
+    width: 100%; // 設定為滿寬
+    box-shadow: none; // 移除陰影
+    border: none; // 移除邊框
+    border-radius: 0; // 移除圓角
+  }
+}
+
+h1 {
+  color: var(--text-color);
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+h3 {
+  color: var(--text-color);
+  margin: 0 0 10px 0;
+}
+
+// 說明文本樣式
+.app-description {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  text-align: left;
+  color: var(--text-color);
+  background-color: var(--highlight-bg);
+  padding: 15px;
+  border-radius: $border-radius;
+}
+
+.text-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @include laptop {
+    flex-direction: row;
+
+    .preview-section {
+      width: calc(50% - 10px);
+    }
+  }
+
+  @include desktop {
+    flex-direction: row;
+
+    .preview-section {
+      width: calc(50% - 20px);
+
+      .preview-content {
+        max-height: 400px; // 在寬螢幕上增加預覽高度
+      }
+    }
+  }
+
+  .card-header {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+
+    h3 {
+      margin: 0;
+      text-align: left;
+    }
+
+    .card-action {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  }
+
+  .preview-section {
+
+    .preview-content {
+      max-height: 300px;
+      overflow-y: auto;
+      background-color: var(--preview-bg);
+      border-radius: 5px;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      text-align: left;
+      color: var(--text-color);
+
+      // 自定義滾動條樣式
+      // 針對 Webkit 瀏覽器 (Chrome, Safari, Edge)
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--button-disabled-bg);
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: var(--button-primary);
+        }
+      }
+
+      // 針對 Firefox
+      scrollbar-width: thin;
+      scrollbar-color: var(--button-disabled-bg) transparent;
+
+      @include mobile {
+        padding: 8px;
+        max-height: 250px;
+      }
+    }
+  }
+}
