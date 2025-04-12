@@ -1,7 +1,7 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as OpenCC from 'opencc-js';
 import { useState } from 'react';
+import { translationService } from '../../services/TranslationService';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 import FileUploader from '../FileUploader/FileUploader';
@@ -16,10 +16,7 @@ function Home() {
   const [fileModel, setFileModel] = useState<FileUploaderModel | null>(null);
   const [previewContent, setPreviewContent] = useState<string>('');
   const [previewConverted, setPreviewConverted] = useState<string>('');
-
-
-  // 創建簡體到繁體(台灣)的轉換器
-  const converter = OpenCC.Converter({ from: 'cn', to: 'tw' });
+  const [isConverting, setIsConverting] = useState<boolean>(false);
 
   // 簡化預覽文字生成函數，直接取前 MAX_PREVIEW_CHARS 字元
   const generatePreview = (text: string): string => {
@@ -28,22 +25,29 @@ function Home() {
   };
 
   // 處理檔案讀取與轉換的通用函數
-  const processFile = (newFileModel: FileUploaderModel) => {
+  const processFile = async (newFileModel: FileUploaderModel) => {
     if (!newFileModel) return;
 
-    console.log('File accepted:', newFileModel.fileName);
     setFileModel(newFileModel);
+    setIsConverting(true);
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const text = e.target?.result as string;
       const previewText = text.substring(0, MAX_PREVIEW_CHARS);
       setPreviewContent(generatePreview(previewText));
 
-      // 自動轉換預覽內容
+      // 使用 TranslationService 進行轉換
       if (previewText) {
-        const converted = converter(previewText);
-        setPreviewConverted(generatePreview(converted));
+        try {
+          const converted = await translationService.convertText(previewText);
+          setPreviewConverted(generatePreview(converted));
+        } catch (error) {
+          console.error('轉換文字時發生錯誤:', error);
+          alert('轉換文字時發生錯誤，請稍後再試');
+        } finally {
+          setIsConverting(false);
+        }
       }
     };
     reader.readAsText(newFileModel.file);
@@ -56,26 +60,35 @@ function Home() {
     setPreviewConverted('');
   };
 
-  const downloadFile = () => {
+  const downloadFile = async () => {
     if (!fileModel) {
       alert('請先上傳文件進行轉換！');
       return;
     }
 
+    setIsConverting(true);
+
     // 下載時才讀取並轉換整個檔案
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const text = e.target?.result as string;
       if (text) {
-        const converted = converter(text);
+        try {
+          const converted = await translationService.convertText(text);
 
-        const element = document.createElement('a');
-        const downloadFile = new Blob([converted], { type: 'text/plain' });
-        element.href = URL.createObjectURL(downloadFile);
-        element.download = `converted_${fileModel.fileName}`;
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
+          const element = document.createElement('a');
+          const downloadFile = new Blob([converted], { type: 'text/plain' });
+          element.href = URL.createObjectURL(downloadFile);
+          element.download = `converted_${fileModel.fileName}`;
+          document.body.appendChild(element);
+          element.click();
+          document.body.removeChild(element);
+        } catch (error) {
+          console.error('轉換文字時發生錯誤:', error);
+          alert('轉換文字時發生錯誤，請稍後再試');
+        } finally {
+          setIsConverting(false);
+        }
       }
     };
     reader.readAsText(fileModel.file);
@@ -84,13 +97,12 @@ function Home() {
   return (
     <div className="container">
       <div className="app-description">
-        <p>此應用程式可以將簡體中文文字轉換為繁體中文（臺灣標準）。使用方式：</p>
+        <p>此應用程式可將簡體中文轉換為臺灣標準繁體中文，並支援自訂辭庫優化。使用方式：</p>
         <ol>
-          <li>點擊「選擇檔案」按鈕或直接拖曳檔案至畫面上傳</li>
-          <li>支援格式: .txt、.json、.md、.csv、.html</li>
-          <li>檔案上傳後會自動轉換為繁體中文</li>
-          <li>在預覽區塊可以查看轉換前後的內容</li>
-          <li>點擊「下載」按鈕可以將轉換後的內容下載為文件</li>
+          <li>點擊「選擇檔案」按鈕或直接拖曳檔案至畫面進行上傳</li>
+          <li>支援格式: .txt、.json、.md、.csv、.html 等文字檔案</li>
+          <li>檔案上傳後會自動套用自訂辭庫進行轉換，包含臺灣地區專有名詞與慣用語</li>
+          <li>可在預覽區塊查看轉換前後的內容比對，並可點擊「下載」按鈕儲存轉換結果</li>
         </ol>
       </div>
 
@@ -113,14 +125,15 @@ function Home() {
           </Card>
         )}
 
-        {previewConverted && (
+        {(previewConverted || isConverting) && (
           <Card className="preview-section">
             <div className="card-header">
-              <h3>轉換後內容預覽</h3>
+              <h3>轉換後內容預覽 {isConverting && '(轉換中...)'}</h3>
               <div className="card-action">
                 <Button
                   className="download-btn"
                   onClick={downloadFile}
+                  disabled={isConverting}
                   tooltip='下載轉換後的檔案'
                 >
                   <FontAwesomeIcon icon={faDownload} />
@@ -128,7 +141,7 @@ function Home() {
               </div>
             </div>
             <div className="preview-content">
-              {previewConverted}
+              {isConverting ? '正在處理中...' : previewConverted}
             </div>
           </Card>
         )}

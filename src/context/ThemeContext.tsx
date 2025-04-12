@@ -27,6 +27,19 @@ const getInitialTheme = (): Theme => {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
+// 更新 favicon 函數
+const updateFavicon = (theme: Theme) => {
+  const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+  if (!favicon) {
+    const newFavicon = document.createElement('link');
+    newFavicon.rel = 'icon';
+    newFavicon.href = theme === 'dark' ? '/dark-favorite-icon.ico' : '/light-favorite-icon.ico';
+    document.head.appendChild(newFavicon);
+  } else {
+    favicon.href = theme === 'dark' ? '/dark-favorite-icon.ico' : '/light-favorite-icon.ico';
+  }
+};
+
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // 使用函數直接初始化 state，避免閃爍
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
@@ -61,10 +74,12 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
   }, []);
 
-  // 當主題改變時，更新 document 的 data-theme 屬性和 localStorage
+  // 當主題改變時，更新 document 的 data-theme 屬性、localStorage 和 favicon
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    // 更新 favicon
+    updateFavicon(theme);
   }, [theme]);
 
   const toggleTheme = () => {
